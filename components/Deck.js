@@ -2,10 +2,23 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 
+import { Feather } from '@expo/vector-icons';
+
+const TopButton = ( {onPressButton} ) => {
+    return (
+        <TouchableOpacity onPress={ () => onPressButton( 'Home' ) } >
+            <View style={{paddingLeft: 10, paddingTop: 5}}>
+                <Feather name='arrow-left' size={25} color='#ffffff' />
+            </View>
+        </TouchableOpacity>
+    )
+}
+
 class Deck extends Component {
     static navigationOptions = ({ navigation }) => {
         return {
-            title: navigation.state.params.title
+            title: navigation.state.params.title,
+            headerLeft: <TopButton onPressButton={ navigation.navigate } />
         }
     }
     render() {
@@ -17,12 +30,15 @@ class Deck extends Component {
                     <Text style={styles.cardsCount}>{ deck.questions.length === 1 ? `${deck.questions.length} card` : `${deck.questions.length} cards` }</Text>
                 </View>
                 <View style={styles.deckActions}>
-                    <TouchableOpacity style={styles.button1}>
+                    <TouchableOpacity onPress={ () => navigation.navigate( 'AddCard', { title: deck.title } )} style={styles.button1}>
                         <Text style={{textAlign:'center'}}>Add Card</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={ () => navigation.navigate( 'Quiz', { title: deck.title } )} style={styles.button2}>
-                        <Text style={[styles.whiteText, {textAlign:'center'}]}>Start Quiz</Text>
-                    </TouchableOpacity>
+
+                    { deck.questions.length > 0 && (
+                        <TouchableOpacity onPress={ () => navigation.navigate( 'Quiz', { title: deck.title } )} style={styles.button2}>
+                            <Text style={[styles.whiteText, {textAlign:'center'}]}>Start Quiz</Text>
+                        </TouchableOpacity>
+                    )}
                 </View>
             </View>
         )

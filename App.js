@@ -7,12 +7,16 @@ import { StackNavigator } from 'react-navigation';
 import reducers from './reducers';
 import DeckList from './components/DeckList';
 import Deck from './components/Deck';
+import AddDeck from './components/AddDeck';
+import AddCard from './components/AddCard';
 import Quiz from './components/Quiz';
 
-function AppStatusBar ({backgroundColor, ...props}) {
+import { FontAwesome } from '@expo/vector-icons';
+
+const TopButton = () => {
   return (
-    <View style={{ backgroundColor, height: Constants.statusBarHeight }}>
-      <StatusBar translucent backgroundColor={backgroundColor} {...props} />
+    <View style={{paddingLeft: 10, paddingTop: 5}}>
+        <FontAwesome name='pencil-square-o' size={25} color='#ffffff' />
     </View>
   )
 }
@@ -28,8 +32,9 @@ const MainNavigator = StackNavigator({
   Home: {
     screen: DeckList,
     navigationOptions: {
-      title: 'MobileFlashCards',
-      ...headerStyles
+      title: 'FlashCards',
+      headerLeft: <TopButton />,
+      ...headerStyles,
     },
   },
   Deck: {
@@ -38,6 +43,14 @@ const MainNavigator = StackNavigator({
   },
   Quiz: {
     screen: Quiz,
+    navigationOptions: headerStyles
+  },
+  AddDeck: {
+    screen: AddDeck,
+    navigationOptions: headerStyles
+  },
+  AddCard: {
+    screen: AddCard,
     navigationOptions: headerStyles
   },
 })
