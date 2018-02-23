@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const Answer = ({ text, flip }) => {
+const Question = ({ text, flip }) => {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>{ text }</Text>
             <TouchableOpacity onPress={ flip }>
-                <Text style={ styles.button }>View Question</Text>
+                <Text style={ styles.button }>View Answer</Text>
             </TouchableOpacity>
         </View>
     )
@@ -33,4 +33,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Answer;
+export default Question;

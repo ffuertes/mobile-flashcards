@@ -4,9 +4,18 @@ import { connect } from 'react-redux';
 
 import { red, green, black, white } from '../utils/colors';
 
+import Question from './Question';
+import Answer from './Answer';
+import Result from './Result';
+
+import { clearLocalNotification, setLocalNotification } from '../utils/helpers';
+
 class Deck extends Component {
     state = {
         questionIndex: 0,
+        correctAnswers: 0,
+        finished: false,
+        answer: false,
     }
 
     static navigationOptions = ({ navigation }) => {
@@ -21,15 +30,58 @@ class Deck extends Component {
         if ( this.state.questionIndex < questionsLength - 1 ) {
             this.setState( prevState => {
                 return {
+                    answer: false,
                     questionIndex: prevState.questionIndex + 1 
                 }
             });
+        } else {
+            this.setState({
+                finished: true
+            });
+            clearLocalNotification()
+                .then(setLocalNotification)
         }
+    }
+
+    onPressCorrect = () => {
+        this.setState( prevState => {
+            return {
+                correctAnswers: prevState.correctAnswers + 1 
+            }
+        });
+
+        this.updateQuestionIndex();
+    }
+
+    repeat = () => {
+        this.setState( {
+            questionIndex: 0,
+            correctAnswers: 0,
+            finished: false,
+            answer: false,
+        });
+    }
+
+    flip = () => {
+        this.setState( prevState => {
+            return {
+                answer: !prevState.answer
+            }
+        });
     }
     
     render() {
         const { deck, navigation } = this.props;
-        const { questionIndex } = this.state;
+        const { questionIndex, finished, correctAnswers, answer } = this.state;
+
+        if ( finished ) {
+            return (
+                <Result 
+                    finalScore={ ( 100 / deck.questions.length ) * correctAnswers } 
+                    repeat={ this.repeat }
+                />
+            )
+        }
         
         return (
             <View style={styles.container}>
@@ -37,12 +89,14 @@ class Deck extends Component {
                     <Text>{ questionIndex + 1 } of { deck.questions.length } questions</Text>
                 </View>
 
-                <View style={styles.deckInfo}>
-                    <Text style={styles.title}>{deck.questions[ questionIndex ].question}</Text>
-                </View>
+                { answer ? (
+                    <Answer flip={this.flip} text={deck.questions[ questionIndex ].answer} />
+                ) : (
+                    <Question flip={this.flip} text={deck.questions[ questionIndex ].question} />
+                )}
 
                 <View style={styles.deckActions}>
-                    <TouchableOpacity onPress={ this.updateQuestionIndex } style={styles.correct}>
+                    <TouchableOpacity onPress={ this.onPressCorrect } style={styles.correct}>
                         <Text style={[styles.whiteText, {textAlign:'center'}]}>Correct</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={ this.updateQuestionIndex } style={styles.incorrect}>
@@ -68,10 +122,6 @@ const styles = StyleSheet.create({
     deckActions: {
         flex: 1,
         justifyContent: 'center',
-    },
-    title: {
-        fontSize: 25,
-        textAlign: 'center',
     },
     cardsCount: {
         fontSize: 24,
